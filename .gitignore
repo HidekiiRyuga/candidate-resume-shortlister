@@ -1,4 +1,6 @@
 .venv/
+data/raw/candidates.jsonl
+data/raw/candidates.jsonl.gz
 __pycache__/
 *.pyc
 
