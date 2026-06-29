@@ -47,3 +47,10 @@ Skills              → 20%
 Achievements        → 10%
 
 Behavior            → 5%
+
+Current Engine
+
+[x] feature extraction
+[x] weighted scoring
+[ ] semantic similarity
+[ ] explanations
