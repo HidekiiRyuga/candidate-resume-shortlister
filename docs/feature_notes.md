@@ -26,3 +26,16 @@ Submission 3
 - centralized ranking config
 - capped scoring
 - easier tuning later
+
+# Update
+
+- increased score separation
+- added percentage achievement detection
+- stronger skill weighting
+- capped score inflation
+
+# Evaluation Layer
+
+[x] ranking explanations
+[x] export pipeline
+[ ] semantic reasoning
