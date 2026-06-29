@@ -80,3 +80,12 @@ Upcoming:8
 [ ] semantic similarity
 [ ] score recalibration
 [ ] explanation tuning
+
+Step 9
+
+[x] semantic hook
+[x] ranking integration
+
+Next:
+[ ] real embeddings
+[ ] recalibrate scores
