@@ -69,3 +69,14 @@ Planned improvements:
 - Semantic similarity between JD and resume
 - Behavioral signal integration
 - Explainable ranking output
+
+Semantic Roadmap
+
+Current:
+[x] feature extraction
+[x] weighted ranking
+
+Upcoming:8
+[ ] semantic similarity
+[ ] score recalibration
+[ ] explanation tuning

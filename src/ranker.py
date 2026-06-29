@@ -9,6 +9,8 @@ def calculate_score(features):
 
     score = 0
 
+    semantic = 0
+
     score += (
         features["skill_score"] / 40
     ) * WEIGHTS["skills"]
@@ -24,6 +26,8 @@ def calculate_score(features):
     score += (
         features["title_score"] / 15
     ) * 10
+
+    score += semantic
 
     return round(score, 2)
 
