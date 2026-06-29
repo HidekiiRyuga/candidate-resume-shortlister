@@ -39,3 +39,14 @@ Submission 3
 [x] ranking explanations
 [x] export pipeline
 [ ] semantic reasoning
+
+# Pipeline
+
+[x] feature extraction
+[x] ranking
+[x] explanations
+[x] export preview
+
+Next:
+[ ] semantic scoring
+[ ] evaluation metrics
