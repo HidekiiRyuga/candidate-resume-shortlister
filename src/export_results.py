@@ -15,14 +15,37 @@ def run():
         start=1
     ):
         output.append(
-            {
-                "rank": rank,
-                "score":
-                    row["score"],
-                "reasons":
-                    explain_candidate(row["features"])
-            }
-        )
+    {
+
+        "rank":
+            rank,
+
+        "score":
+            row["score"],
+
+        "matched_skills":
+            row[
+                "features"
+            ][
+                "matched_skills"
+            ],
+
+        "experience_score":
+            row[
+                "features"
+            ][
+                "experience_score"
+            ],
+
+        "reasons":
+            explain_candidate(
+                row[
+                    "features"
+                ]
+            ),
+
+    }
+)
 
     with open(
         "results.json",

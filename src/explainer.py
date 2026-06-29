@@ -1,18 +1,72 @@
 def explain_candidate(features):
+
     reasons = []
-    if features["skill_score"] >= 10:
-        reasons.append("strong skill alignment")
 
-    if features["experience_score"] >= 15:
-        reasons.append("relevant experience")
+    skills = features.get(
+        "matched_skills",
+        []
+    )
 
-    if features["achievement_score"] >= 3:
-        reasons.append("impact indicators")
+    if skills:
 
-    if features["title_score"] >= 2:
-        reasons.append("relevant job titles")
+        shown = skills[:3]
+
+        reasons.append(
+
+            "matched skills: "
+            + ", ".join(shown)
+
+        )
+
+    experience = features.get(
+        "experience_score",
+        0
+    )
+
+    if experience:
+
+        approx_years = round(
+            experience / 3
+        )
+
+        reasons.append(
+
+            f"estimated {approx_years}+ years experience"
+
+        )
+
+    title = features.get(
+        "title_score",
+        0
+    )
+
+    if title >= 4:
+
+        reasons.append(
+
+            "relevant engineering background"
+
+        )
+
+    achievement = features.get(
+        "achievement_score",
+        0
+    )
+
+    if achievement >= 3:
+
+        reasons.append(
+
+            "multiple measurable achievements"
+
+        )
 
     if not reasons:
-        reasons.append("limited matching signals")
+
+        reasons.append(
+
+            "limited strong signals"
+
+        )
 
     return reasons

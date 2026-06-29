@@ -47,6 +47,11 @@ Submission 3
 [x] explanations
 [x] export preview
 
+# Step 9
+
+[x] specific explanations
+[x] richer export output
+
 Next:
-[ ] semantic scoring
-[ ] evaluation metrics
+[ ] semantic score
+[ ] final tuning
