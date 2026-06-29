@@ -19,3 +19,10 @@ Submission 3
 [ ] reranking
 [ ] streamlit polish
 [ ] evaluation
+
+# Implementation Notes
+
+- readable extraction functions
+- centralized ranking config
+- capped scoring
+- easier tuning later
