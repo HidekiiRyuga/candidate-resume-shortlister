@@ -9,9 +9,6 @@ from src.ranking_config import (
 
 
 def candidate_to_text(candidate):
-    """
-    Convert candidate object to one text blob.
-    """
     return str(candidate).lower()
 
 
@@ -21,60 +18,73 @@ def get_skill_score(text):
     matched = []
 
     for skill in REQUIRED_SKILLS:
+
         if skill in text:
-            score += 5
+            score += 8
             matched.append(skill)
 
     for skill in PREFERRED_SKILLS:
+
         if skill in text:
-            score += 2
+            score += 3
             matched.append(skill)
 
-    return score, matched
+    return min(score, 40), matched
 
 
 def get_experience_score(text):
 
     years = re.findall(
-        r"(\\d+)\\+?\\s*year",
+        r"(\d+)\+?\s*year",
         text
     )
 
     if not years:
         return 0
 
-    highest = max(map(int, years))
+    years = max(map(int, years))
 
-    return min(highest * 4,25)
+    if years >= 8:
+        return 25
+
+    return min(
+        years * 3,
+        25
+    )
 
 
 def get_title_score(text):
     score = 0
-
     for title in GOOD_TITLES:
         if title in text:
-            score += 3
+            score += 2
 
-    return score
+    return min(score, 15)
 
 
 def get_achievement_score(text):
-    score = 0
+    count = 0
 
     for word in ACHIEVEMENT_WORDS:
-        score += text.count(word)
+        count += text.count(word)
 
-    return min(score, 10)
+    count += len(
+        re.findall(
+            r"\d+%",
+            text
+        )
+    )
+
+    return min(count, 10)
 
 
 def extract_candidate_features(candidate):
-
     text = candidate_to_text(candidate)
     skill_score, skills = (get_skill_score(text))
     experience = (get_experience_score(text))
     title = (get_title_score(text))
-
     achievement = (get_achievement_score(text))
+
     return {
         "skill_score":skill_score,
         "experience_score":experience,

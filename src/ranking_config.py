@@ -61,35 +61,24 @@ PREFERRED_SKILLS = [
 
 GOOD_TITLES = [
 
-    "ai engineer",
-
-    "ml engineer",
-
-    "machine learning engineer",
-
-    "applied scientist",
-
-    "search engineer",
-
-    "ranking engineer",
-
-    "recommendation engineer",
+    "engineer",
+    "software engineer",
 
     "data scientist",
 
-]
+    "machine learning engineer",
 
-# Negative Indicators
+    "ml engineer",
 
-NEGATIVE_KEYWORDS = [
+    "ai engineer",
 
-    "marketing manager",
+    "senior engineer",
 
-    "sales",
+    "developer",
 
-    "consultant",
+    "research engineer",
 
-    "business development",
+    "backend engineer",
 
 ]
 
