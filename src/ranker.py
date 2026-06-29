@@ -1,38 +1,29 @@
-from src.feature_extractor import (
-    extract_candidate_features
-)
-
-from src.ranking_config import (
-    WEIGHTS
-)
+from src.feature_extractor import extract_candidate_features
+from src.ranking_config import WEIGHTS
 
 
 def calculate_score(features):
+    """
+    Calculate a weighted score for one candidate.
+    """
 
     score = 0
 
     score += (
-        features["skill_score"]
-        * WEIGHTS["skills"]
-        / 20
-    )
+        features["skill_score"] / 40
+    ) * WEIGHTS["skills"]
 
     score += (
-        features["experience_score"]
-        * WEIGHTS["experience"]
-        / 25
-    )
+        features["experience_score"] / 25
+    ) * WEIGHTS["experience"]
 
     score += (
-        features["achievement_score"]
-        * WEIGHTS["achievements"]
-        / 10
-    )
+        features["achievement_score"] / 10
+    ) * WEIGHTS["achievements"]
 
     score += (
-        features["title_score"]
-        * 2
-    )
+        features["title_score"] / 15
+    ) * 10
 
     return round(score, 2)
 
@@ -43,28 +34,19 @@ def rank_candidates(candidates):
 
     for candidate in candidates:
 
-        features = (
-            extract_candidate_features(
-                candidate
-            )
-        )
-
-        final_score = (
-            calculate_score(
-                features
-            )
-        )
+        features = extract_candidate_features(candidate)
 
         ranked.append(
             {
-                "score": final_score,
+                "candidate": candidate,
+                "score": calculate_score(features),
                 "features": features,
             }
         )
 
     ranked.sort(
-        key=lambda x: x["score"],
-        reverse=True
+        key=lambda item: item["score"],
+        reverse=True,
     )
 
     return ranked

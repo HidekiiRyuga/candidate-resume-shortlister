@@ -54,3 +54,18 @@ Current Engine
 [x] weighted scoring
 [ ] semantic similarity
 [ ] explanations
+
+## Current Ranking Engine
+
+Current weighted features:
+
+- Skills
+- Experience
+- Achievements
+- Job titles
+
+Planned improvements:
+
+- Semantic similarity between JD and resume
+- Behavioral signal integration
+- Explainable ranking output

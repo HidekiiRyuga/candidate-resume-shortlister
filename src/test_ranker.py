@@ -2,25 +2,23 @@ from src.loader import load_candidates
 from src.ranker import rank_candidates
 
 
-data = load_candidates(
-    limit=10
-)
+def main():
 
-results = rank_candidates(
-    data
-)
+    candidates = load_candidates(limit=10)
 
-for i, row in enumerate(
-    results[:5],
-    start=1
-):
+    ranked = rank_candidates(candidates)
 
-    print()
+    print("\nTop 5 Candidates\n")
 
-    print(
-        f"Rank {i}"
-    )
+    for rank, candidate in enumerate(ranked[:5], start=1):
 
-    print(
-        row["score"]
-    )
+        print("-" * 50)
+
+        print(f"Rank {rank}")
+        print(f"Score : {candidate['score']}")
+
+        print(candidate["features"])
+
+
+if __name__ == "__main__":
+    main()
