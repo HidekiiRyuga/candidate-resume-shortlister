@@ -7,14 +7,10 @@ def main():
 
     print("\nTop 10\n")
 
-    for i, row in enumerate(ranked[:10], 1):
-        f = row["features"]
-        s = row["candidate"]["redrob_signals"]
-
-        print(f"{i}. Score: {row['score']}")
-        print("Skills:", f["matched_skills"])
-        print("Response:", s["recruiter_response_rate"])
-        print("Interview:", s["interview_completion_rate"])
+    for row in ranked[:10]:
+        print(f"Rank: {row['rank']}")
+        print(f"Score: {row['score']}")
+        print(f"Skills: {row['features']['matched_skills']}")
         print("-" * 40)
 
 

@@ -40,6 +40,7 @@ def calculate_score(features, candidate):
     score += signal_bonus
     
 
+    score = max(0, min(score, 100))
     return round(score, 2)
 
 
@@ -65,9 +66,12 @@ def rank_candidates(candidates):
         )
 
     ranked.sort(
-        key=lambda item: item["score"],
-        reverse=True,
+        key=lambda x: x["score"],
+        reverse=True
     )
+
+    for rank, row in enumerate(ranked, 1):
+        row["rank"] = rank
 
     return ranked
 

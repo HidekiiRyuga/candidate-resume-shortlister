@@ -116,3 +116,9 @@ Added Redrob platform signals:
 - open to work flag
 
 These are used as small ranking bonuses rather than dominant factors.
+
+## Step 14
+
+- Added score normalization
+- Added rank assignment inside ranking engine
+- Finalized ranking output format
