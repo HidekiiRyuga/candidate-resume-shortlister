@@ -1,72 +1,32 @@
-def explain_candidate(features):
+def explain_candidate(candidate,features):
 
-    reasons = []
+    reasons=[]
 
-    skills = features.get(
-        "matched_skills",
-        []
-    )
+    skills=features["matched_skills"]
 
     if skills:
-
-        shown = skills[:3]
-
         reasons.append(
-
-            "matched skills: "
-            + ", ".join(shown)
-
+            f"{len(skills)} AI core skills"
         )
 
-    experience = features.get(
-        "experience_score",
-        0
+    yrs=(
+        candidate
+        .get("profile",{})
+        .get("years_of_experience",0)
     )
 
-    if experience:
-
-        approx_years = round(
-            experience / 3
-        )
-
-        reasons.append(
-
-            f"estimated {approx_years}+ years experience"
-
-        )
-
-    title = features.get(
-        "title_score",
-        0
+    reasons.append(
+        f"{yrs} yrs"
     )
 
-    if title >= 4:
-
-        reasons.append(
-
-            "relevant engineering background"
-
-        )
-
-    achievement = features.get(
-        "achievement_score",
-        0
+    response=(
+        candidate
+        .get("redrob_signals",{})
+        .get("recruiter_response_rate",0)
     )
 
-    if achievement >= 3:
+    reasons.append(
+        f"response rate {round(response,2)}"
+    )
 
-        reasons.append(
-
-            "multiple measurable achievements"
-
-        )
-
-    if not reasons:
-
-        reasons.append(
-
-            "limited strong signals"
-
-        )
-
-    return reasons
+    return "; ".join(reasons)

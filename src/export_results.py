@@ -6,25 +6,23 @@ from src.explainer import explain_candidate
 
 def build_reason(row):
 
-    f=row["features"]
-
-    skills=len(f["matched_skills"])
-
     candidate=row["candidate"]
 
-    response_rate=(
-        candidate.get("response_rate")
-        or candidate.get("responseRate")
-        or 0
+    title=(
+        candidate
+        .get("profile",{})
+        .get(
+            "current_title",
+            "Candidate"
+        )
     )
 
-    return (
-        f"{candidate.get('current_title','Candidate')} "
-        f"with {round(f['experience_score']/3,1)} yrs; "
-        f"{skills} AI core skills; "
-        f"response rate {round(float(response_rate),2)}."
+    details=explain_candidate(
+        candidate,
+        row["features"]
     )
 
+    return f"{title} with {details}."
 
 def export():
 
