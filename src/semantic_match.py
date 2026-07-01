@@ -1,15 +1,16 @@
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+
+model = SentenceTransformer("all-MiniLM-L6-v2")
+
+
 def semantic_score(job_text, candidate_text):
-    """
-    Placeholder for semantic matching.
-    Returns 0–10.
-    """
+    job_embedding = model.encode([job_text])
+    candidate_embedding = model.encode([candidate_text])
 
-    if not job_text or not candidate_text:
-        return 0
+    score = cosine_similarity(
+        job_embedding,
+        candidate_embedding
+    )[0][0]
 
-    job=set(job_text.lower().split())
-    candidate=set(candidate_text.lower().split())
-
-    overlap=len(job & candidate)
-
-    return min(overlap,10)
+    return round(score * 20, 2)

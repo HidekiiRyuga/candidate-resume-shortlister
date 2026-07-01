@@ -1,16 +1,28 @@
+# Python
 .venv/
+
 data/raw/candidates.jsonl
 data/raw/candidates.jsonl.gz
 data/processed/
 outputs/
 models/
+
+
 __pycache__/
 *.pyc
 
-models/
-outputs/
+# Dataset
+data/raw/candidates.jsonl
+data/raw/candidates.jsonl.gz
 
+# Generated files
+outputs/
+models/
+data/processed/
+
+# VS Code
 .vscode/
+
 
 .DS_Store
 
@@ -19,3 +31,7 @@ final_preview.json
 results.json
 submission_preview.json
 submission.csv
+
+# OS
+.DS_Store
+
