@@ -1,64 +1,55 @@
-import json
+import pandas as pd
 from src.loader import load_candidates
 from src.ranker import rank_candidates
 from src.explainer import explain_candidate
 
 
-def run():
-    candidates = load_candidates(limit=20)
-    ranked = rank_candidates(candidates)
+def build_reason(row):
 
-    output = []
+    f=row["features"]
 
-    for rank, row in enumerate(
-        ranked,
-        start=1
-    ):
-        output.append(
-    {
+    skills=len(f["matched_skills"])
 
-        "rank":
-            rank,
+    return (
+        f"{row['candidate'].get('current_title','Candidate')} "
+        f"with {round(f['experience_score']/3,1)} yrs; "
+        f"{skills} AI core skills; "
+        f"semantic score {round(row.get('semantic_score',0),2)}."
+    )
 
-        "score":
-            row["score"],
 
-        "matched_skills":
-            row[
-                "features"
-            ][
-                "matched_skills"
-            ],
+def export():
 
-        "experience_score":
-            row[
-                "features"
-            ][
-                "experience_score"
-            ],
+    ranked=rank_candidates(
+        load_candidates()
+    )
 
-        "reasons":
-            explain_candidate(
-                row[
-                    "features"
-                ]
-            ),
+    rows=[]
 
-    }
-)
+    for i,row in enumerate(ranked,1):
 
-    with open(
-        "results.json",
-        "w",
-        encoding="utf-8",
-    ) as f:
-        json.dump(
-            output,
-            f,
-            indent=2,
-        )
+        rows.append({
+            "candidate_id":
+                row["candidate"]["candidate_id"],
+            "rank":i,
+            "score":
+                round(
+                    row["score"]/100,
+                    3
+                ),
+            "reasoning":
+                build_reason(row)
+        })
 
-    print("results.json created")
+    df=pd.DataFrame(rows)
 
-if __name__ == "__main__":
-    run()
+    df.to_csv(
+        "submission.csv",
+        index=False
+    )
+
+    print("submission.csv created")
+
+
+if __name__=="__main__":
+    export()

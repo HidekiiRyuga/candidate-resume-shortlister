@@ -55,3 +55,13 @@ Submission 3
 Next:
 [ ] semantic score
 [ ] final tuning
+
+# Step 11
+
+[x] exported full ranking
+[x] exposed semantic score
+[x] candidate inspection
+
+Next:
+[ ] final calibration
+[ ] submission validation
