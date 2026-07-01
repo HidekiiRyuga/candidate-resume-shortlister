@@ -1,32 +1,66 @@
-def explain_candidate(candidate,features):
+def explain_candidate(candidate, features):
 
-    reasons=[]
+    reasons = []
 
-    skills=features["matched_skills"]
+    profile = candidate.get(
+        "profile",
+        {}
+    )
 
-    if skills:
-        reasons.append(
-            f"{len(skills)} AI core skills"
-        )
+    signals = candidate.get(
+        "redrob_signals",
+        {}
+    )
 
-    yrs=(
-        candidate
-        .get("profile",{})
-        .get("years_of_experience",0)
+    title = profile.get(
+        "current_title",
+        "Candidate"
+    )
+
+    yrs = profile.get(
+        "years_of_experience",
+        0
+    )
+
+    skills = features.get(
+        "matched_skills",
+        []
+    )
+
+    response = signals.get(
+        "recruiter_response_rate",
+        0
+    )
+
+    reasons.append(
+        f"{title}"
     )
 
     reasons.append(
         f"{yrs} yrs"
     )
 
-    response=(
-        candidate
-        .get("redrob_signals",{})
-        .get("recruiter_response_rate",0)
-    )
+    if skills:
+
+        reasons.append(
+            f"{len(skills)} AI skills"
+        )
+
+        reasons.append(
+            ", ".join(
+                skills[:3]
+            )
+        )
 
     reasons.append(
-        f"response rate {round(response,2)}"
+        f"response rate {round(response, 2)}"
     )
+
+    if signals.get(
+        "open_to_work_flag"
+    ):
+        reasons.append(
+            "open to work"
+        )
 
     return "; ".join(reasons)

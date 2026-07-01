@@ -1,22 +1,25 @@
-# Redrob Intelligent Candidate Discovery & Ranking
+# Redrob Intelligent Candidate Discovery
 
-Team Project for the Redrob AI Hackathon.
+AI ranking system for candidate shortlisting.
 
-## Project Structure
+## Features
 
-- Data Loading
-- Feature Engineering
-- Candidate Ranking
-- Submission Generation
-- Streamlit Demo (later)
+- Feature extraction
+- Semantic matching
+- Redrob signal scoring
+- Explainable ranking
+- CSV submission generation
 
-## Development Progress
+## Run
 
-- [x] Project setup
-- [x] Data loading foundation
-- [x] Job Description analysis
-- [ ] Feature engineering
-- [ ] Candidate scoring
-- [ ] Ranking engine
-- [ ] Reason generation
-- [ ] Streamlit demo
+Install:
+
+pip install -r requirements.txt
+
+Generate submission:
+
+python -m src.export_results
+
+Output:
+
+submission.csv
