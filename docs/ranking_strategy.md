@@ -100,3 +100,9 @@ Current ranking:
 Next:
 - real semantic embeddings
 - final score calibration
+
+Step 12
+
+- Exposed semantic score for debugging
+- Feature-by-feature score inspection
+- Preparing for final calibration

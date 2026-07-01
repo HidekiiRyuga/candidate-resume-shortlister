@@ -8,9 +8,18 @@ def main():
     print("\nTop 10\n")
 
     for i, row in enumerate(ranked[:10], 1):
+        f = row["features"]
+
         print(f"{i}. Score: {row['score']}")
-        print("Skills:", row["features"]["matched_skills"])
-        print()
+        print(f"Semantic: {row['semantic_score']}")
+        print(f"Skills: {f['matched_skills']}")
+        print(
+            f"Exp={f['experience_score']} "
+            f"Title={f['title_score']} "
+            f"Achievement={f['achievement_score']}"
+        )
+        print("-" * 40)
+
 
 if __name__ == "__main__":
     main()

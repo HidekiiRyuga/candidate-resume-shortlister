@@ -2,6 +2,19 @@ from src.feature_extractor import extract_candidate_features
 from src.ranking_config import WEIGHTS
 from src.semantic_match import semantic_score
 
+JOB_DESCRIPTION = """
+Senior AI Engineer
+
+Python
+LLMs
+Retrieval
+Ranking
+Embeddings
+Vector databases
+Evaluation
+Production ML
+"""
+
 def calculate_score(features, candidate):
     score = 0
 
@@ -20,9 +33,9 @@ def calculate_score(features, candidate):
         score += 3
 
     score += semantic_score(
-        "ai engineer retrieval ranking llm python",
-        str(candidate)
-    )
+    JOB_DESCRIPTION,
+    str(candidate)
+)
 
     return round(score, 2)
 
@@ -35,10 +48,15 @@ def rank_candidates(candidates):
 
         features = extract_candidate_features(candidate)
 
+        semantic = semantic_score(JOB_DESCRIPTION, str(candidate))
+
+        score = calculate_score(features, candidate)
+
         ranked.append(
             {
                 "candidate": candidate,
                 "score": calculate_score(features, candidate),
+                "semantic_score": semantic,
                 "features": features,
             }
         )
