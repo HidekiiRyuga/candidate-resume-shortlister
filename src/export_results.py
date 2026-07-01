@@ -10,11 +10,19 @@ def build_reason(row):
 
     skills=len(f["matched_skills"])
 
+    candidate=row["candidate"]
+
+    response_rate=(
+        candidate.get("response_rate")
+        or candidate.get("responseRate")
+        or 0
+    )
+
     return (
-        f"{row['candidate'].get('current_title','Candidate')} "
+        f"{candidate.get('current_title','Candidate')} "
         f"with {round(f['experience_score']/3,1)} yrs; "
         f"{skills} AI core skills; "
-        f"semantic score {round(row.get('semantic_score',0),2)}."
+        f"response rate {round(float(response_rate),2)}."
     )
 
 
@@ -23,6 +31,8 @@ def export():
     ranked=rank_candidates(
         load_candidates()
     )
+
+    print("loading candidates")
 
     rows=[]
 
@@ -40,6 +50,8 @@ def export():
             "reasoning":
                 build_reason(row)
         })
+
+    print("ranked:", len(ranked))
 
     df=pd.DataFrame(rows)
 
