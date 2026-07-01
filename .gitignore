@@ -1,6 +1,9 @@
 .venv/
 data/raw/candidates.jsonl
 data/raw/candidates.jsonl.gz
+data/processed/
+outputs/
+models/
 __pycache__/
 *.pyc
 
@@ -10,3 +13,9 @@ outputs/
 .vscode/
 
 .DS_Store
+
+data/
+final_preview.json
+results.json
+submission_preview.json
+submission.csv
