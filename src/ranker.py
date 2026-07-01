@@ -2,23 +2,29 @@ from src.feature_extractor import extract_candidate_features
 from src.ranking_config import WEIGHTS
 from src.semantic_match import semantic_score
 
-def calculate_score(features,candidate):
+def calculate_score(features, candidate):
+    score = 0
 
-    score=0
+    score += (features["skill_score"] / 40) * WEIGHTS["skills"]
+    score += (features["experience_score"] / 25) * WEIGHTS["experience"]
+    score += (features["achievement_score"] / 10) * WEIGHTS["achievements"]
+    score += (features["title_score"] / 15) * 10
 
-    score+=(features["skill_score"]/40)*WEIGHTS["skills"]
-    score+=(features["experience_score"]/25)*WEIGHTS["experience"]
-    score+=(features["achievement_score"]/10)*WEIGHTS["achievements"]
-    score+=(features["title_score"]/15)*10
+    skills = features["matched_skills"]
 
-    semantic=semantic_score(
-        "ai engineer ranking retrieval",
+    # Bonus for important skill combinations
+    if "python" in skills and ("retrieval" in skills or "ranking" in skills):
+        score += 5
+
+    if "python" in skills and ("lora" in skills or "rag" in skills):
+        score += 3
+
+    score += semantic_score(
+        "ai engineer retrieval ranking llm python",
         str(candidate)
     )
 
-    score+=semantic
-
-    return round(score,2)
+    return round(score, 2)
 
 
 def rank_candidates(candidates):
@@ -32,7 +38,7 @@ def rank_candidates(candidates):
         ranked.append(
             {
                 "candidate": candidate,
-                "score": calculate_score(features),
+                "score": calculate_score(features, candidate),
                 "features": features,
             }
         )

@@ -3,22 +3,14 @@ from src.ranker import rank_candidates
 
 
 def main():
+    ranked = rank_candidates(load_candidates(limit=20))
 
-    candidates = load_candidates(limit=10)
+    print("\nTop 10\n")
 
-    ranked = rank_candidates(candidates)
-
-    print("\nTop 5 Candidates\n")
-
-    for rank, candidate in enumerate(ranked[:5], start=1):
-
-        print("-" * 50)
-
-        print(f"Rank {rank}")
-        print(f"Score : {candidate['score']}")
-
-        print(candidate["features"])
-
+    for i, row in enumerate(ranked[:10], 1):
+        print(f"{i}. Score: {row['score']}")
+        print("Skills:", row["features"]["matched_skills"])
+        print()
 
 if __name__ == "__main__":
     main()

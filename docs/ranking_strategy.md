@@ -89,3 +89,14 @@ Step 9
 Next:
 [ ] real embeddings
 [ ] recalibrate scores
+
+Step 10
+
+Current ranking:
+- weighted feature scores
+- semantic hook
+- skill combination bonuses
+
+Next:
+- real semantic embeddings
+- final score calibration
