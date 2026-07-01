@@ -35,7 +35,10 @@ def calculate_score(features, candidate):
     score += semantic_score(
     JOB_DESCRIPTION,
     str(candidate)
-)
+) 
+    signal_bonus = get_signal_bonus(candidate)
+    score += signal_bonus
+    
 
     return round(score, 2)
 
@@ -67,3 +70,17 @@ def rank_candidates(candidates):
     )
 
     return ranked
+
+def get_signal_bonus(candidate):
+    signals = candidate.get("redrob_signals", {})
+
+    bonus = 0
+
+    if signals.get("open_to_work_flag"):
+        bonus += 2
+
+    bonus += signals.get("profile_completeness_score", 0) / 50
+    bonus += signals.get("recruiter_response_rate", 0) * 3
+    bonus += signals.get("interview_completion_rate", 0) * 2
+
+    return round(bonus, 2)

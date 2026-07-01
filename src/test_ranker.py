@@ -9,15 +9,12 @@ def main():
 
     for i, row in enumerate(ranked[:10], 1):
         f = row["features"]
+        s = row["candidate"]["redrob_signals"]
 
         print(f"{i}. Score: {row['score']}")
-        print(f"Semantic: {row['semantic_score']}")
-        print(f"Skills: {f['matched_skills']}")
-        print(
-            f"Exp={f['experience_score']} "
-            f"Title={f['title_score']} "
-            f"Achievement={f['achievement_score']}"
-        )
+        print("Skills:", f["matched_skills"])
+        print("Response:", s["recruiter_response_rate"])
+        print("Interview:", s["interview_completion_rate"])
         print("-" * 40)
 
 

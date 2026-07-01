@@ -106,3 +106,13 @@ Step 12
 - Exposed semantic score for debugging
 - Feature-by-feature score inspection
 - Preparing for final calibration
+
+## Step 13
+
+Added Redrob platform signals:
+- recruiter response rate
+- interview completion rate
+- profile completeness
+- open to work flag
+
+These are used as small ranking bonuses rather than dominant factors.
