@@ -23,7 +23,7 @@ team_members:
 github_repo: "https://github.com/HidekiiRyuga/candidate-resume-shortlister"
 
 
-sandbox_link: "TO BE DECLARED"
+sandbox_link: "https://candidate-resume-shortlister.streamlit.app"
 
 
 reproduce_command: "python -m src.export_results"
