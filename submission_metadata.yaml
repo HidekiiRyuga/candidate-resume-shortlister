@@ -1,0 +1,73 @@
+# ============================================================================
+# Team identity
+# ============================================================================
+team_name: "TitansGo"  
+
+primary_contact:
+  name: "Nitin"
+  email: "nitinrajput190606@gmail.com"  
+  phone: "+91-7200470031"       
+
+team_members:
+  - name: "Nitin"
+    email: "nitinrajput190606@gmail.com"
+    role: "Ranking Algorithm & Scoring"       
+  - name: "Stuti Jeisa Toppo"
+    email: "btech10506.24@bitmesra.ac.in"
+    role: "Feature Engineering & Documentation"
+
+
+# ============================================================================
+# Code and reproducibility
+# ============================================================================
+github_repo: "https://github.com/HidekiiRyuga/candidate-resume-shortlister"
+
+
+sandbox_link: "TO BE DECLARED"
+
+
+reproduce_command: "python -m src.export_results"
+
+
+# ============================================================================
+# Compute environment
+# ============================================================================
+compute:
+  platform: "HP ProBook 445 14-inch G10 Notebook PC"
+  cpu_cores: 6
+  ram_gb: 16
+  python_version: "3.10.11"
+  os: "Windows 11"
+  uses_gpu_for_inference: false
+  has_network_during_ranking: false
+  pre_computation_required: false
+  pre_computation_time_minutes: 0
+
+
+ai_tools_used:
+  - "ChatGPT"        
+
+ai_usage_summary: |
+  ChatGPT was used for debugging, code refinement, and documentation.
+  The team implemented, tested, validated, and finalized the solution.
+
+methodology_summary: |
+  Our system uses a two-stage candidate ranking pipeline optimized for CPU-only
+  execution. Candidate profiles are first processed using feature extraction to
+  score skills, experience, achievements, job titles, and recruiter signals.
+  A fast heuristic scoring stage filters the candidate pool to the top-K
+  candidates. These candidates are then reranked using semantic similarity
+  between the job description and candidate profiles together with weighted
+  feature scores and domain-specific bonuses for AI skills such as retrieval,
+  ranking, embeddings, evaluation, and vector database experience. Final scores
+  are normalized into a deterministic ranking with candidate ID tie-breaking,
+  and concise explanations are generated directly from candidate attributes
+  without hallucinating information. The complete pipeline is reproducible,
+  requires no external APIs during ranking, and runs entirely on CPU.
+
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: false
+  reproduction_tested: true
