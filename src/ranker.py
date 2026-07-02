@@ -3,6 +3,7 @@ from src.ranking_config import WEIGHTS
 from src.semantic_match import semantic_scores_batch
 import heapq
 import time
+from src.feature_extractor import candidate_to_text
 
 JOB_DESCRIPTION="""
 Senior AI Engineer
@@ -54,6 +55,24 @@ def calculate_score(features, candidate, semantic):
 
     score+=signal
 
+    signals = candidate.get("redrob_signals", {})
+
+    if signals.get("recruiter_response_rate", 0) >= 0.80:
+        score += 2
+
+    if signals.get("interview_completion_rate", 0) >= 0.90:
+        score += 2
+
+    if signals.get("github_activity_score", -1) >= 80:
+        score += 2
+
+    notice = signals.get("notice_period_days", 0)
+
+    if notice >= 120:
+        score -= 4
+    elif notice >= 90:
+        score -= 2
+        
     if matched>=4:
         semantic*=0.55
     elif matched>=2:
@@ -63,10 +82,12 @@ def calculate_score(features, candidate, semantic):
 
     score+=semantic
 
-    score+=matched*4
+    score+=matched*5
 
-    if matched>=3:
-        score+=6
+    if matched >= 4:
+        score += 8
+    elif matched == 3:
+        score += 5
 
     if (
         "python" in skills
@@ -77,8 +98,9 @@ def calculate_score(features, candidate, semantic):
     ):
         score+=6
 
-    if len(VECTOR & skills)>0:
-        score+=5
+    vector_matches = len(VECTOR & skills)
+
+    score += min(vector_matches * 2, 6)
 
     if (
         "evaluation" in skills
@@ -98,13 +120,15 @@ def calculate_score(features, candidate, semantic):
     score -= features[
     "consistency_penalty"
 ]
-    score=max(score,0)
+
+    if semantic < 4:
+        score -= 6
+
+    elif semantic < 6:
+        score -= 3
 
     return round(score,2)
 
-
-import time
-import heapq
 
 def rank_candidates(candidates):
 
@@ -139,7 +163,7 @@ def rank_candidates(candidates):
     t2 = time.time()
 
     stage2 = heapq.nlargest(
-        1000,
+        2000,
         stage1,
         key=lambda x: x["fast_score"]
     )
@@ -150,7 +174,7 @@ def rank_candidates(candidates):
     t3 = time.time()
 
     candidate_texts = [
-        str(row["candidate"])
+        candidate_to_text(row["candidate"])
         for row in stage2
     ]
 
@@ -182,21 +206,15 @@ def rank_candidates(candidates):
         })
 
     ranked.sort(
-
         key=lambda x: (
-
             x["score"],
-
             len(x["features"]["matched_skills"]),
-
             x["semantic_score"],
-
+            x["features"]["signal_score"],
+            -x["candidate"]["profile"]["years_of_experience"],
             x["candidate"]["candidate_id"]
-
         ),
-
         reverse=True
-
     )
 
     for rank, row in enumerate(ranked, 1):

@@ -27,7 +27,16 @@ def export():
 
     start = time.time()
 
-    ranked = rank_candidates(candidates)[:100]
+    ranked = rank_candidates(candidates)
+
+    ranked.sort(
+        key=lambda x: (
+            -x["score"],
+            x["candidate"]["candidate_id"]
+        )
+    )
+
+    ranked = ranked[:100]
 
     print(f"Ranking completed in {time.time()-start:.2f}s")
 
@@ -53,18 +62,28 @@ def export():
     # -----------------------------
     # STEP 2: Normalize scores properly
     # -----------------------------
-    top_score = ranked[0]["score"]
-    bottom_score = ranked[-1]["score"]
+    top_score = max(row["score"] for row in ranked)
+    bottom_score = min(row["score"] for row in ranked)
 
-    score_range = max(top_score - bottom_score, 1e-9)
+    score_range = max(
+        top_score - bottom_score,
+        1e-9
+    )
 
     rows = []
 
     for i, row in enumerate(ranked, 1):
 
+        row["rank"] = i
+
         normalized_score = (
             row["score"] - bottom_score
         ) / score_range
+
+        score = round(normalized_score, 3)
+
+        if rows:
+            score = min(score, rows[-1]["score"])
 
         rows.append({
             "candidate_id":
@@ -74,23 +93,39 @@ def export():
                 i,
 
             "score":
-                round(normalized_score, 3),
+                score,
 
             "reasoning":
                 build_reason(row)
         })
-
     print("ranked:", len(rows))
 
+    if rows:
+        print(
+            "Top score:",
+            rows[0]["score"],
+            "Bottom score:",
+            rows[-1]["score"]
+        )
+
+    assert len(rows) == 100
+
+    assert len(set(r["candidate_id"] for r in rows)) == 100
+
+    assert sorted(r["rank"] for r in rows) == list(range(1, 101))
+
+    for i in range(1, len(rows)):
+        assert rows[i-1]["score"] >= rows[i]["score"]
+        
     df = pd.DataFrame(rows)
 
     df.to_csv(
-        "submission.csv",
+        "team_TitansGo.csv",
         index=False,
         encoding="utf-8"
     )
 
-    print("submission.csv created")
+    print("team_TitansGo.csv created")
 
 
 if __name__ == "__main__":

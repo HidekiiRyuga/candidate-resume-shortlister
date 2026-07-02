@@ -229,37 +229,30 @@ def consistency_penalty(candidate):
     penalty = 0
 
     profile = candidate.get("profile", {})
+    history = candidate.get("career_history", [])
+    skills = candidate.get("skills", [])
 
-    experience = profile.get(
-        "years_of_experience",
-        0
+    years = profile.get("years_of_experience", 0)
+
+    expert = sum(
+        1
+        for s in skills
+        if s.get("proficiency") == "expert"
     )
 
-    skills = candidate.get(
-        "skills",
-        []
+    if years < 2 and expert >= 8:
+        penalty += 8
+
+    if len(history) == 0:
+        penalty += 4
+
+    total_months = sum(
+        job.get("duration_months", 0)
+        for job in history
     )
 
-    for skill in skills:
-
-        duration = skill.get(
-            "duration_months",
-            0
-        )
-
-        proficiency = skill.get(
-            "proficiency",
-            ""
-        ).lower()
-
-        if (
-            proficiency == "expert"
-            and duration < 6
-        ):
-            penalty += 3
-
-        if duration > experience * 12 + 12:
-            penalty += 2
+    if total_months < years * 8:
+        penalty += 5
 
     return penalty
 

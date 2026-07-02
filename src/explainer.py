@@ -1,3 +1,20 @@
+TOP_TEMPLATES = [
+    "Strong alignment with the core AI requirements.",
+    "Excellent match for the target role.",
+    "Profile closely matches the primary technical requirements."
+]
+
+MID_TEMPLATES = [
+    "Good alignment with the technical requirements.",
+    "Relevant experience for the target role.",
+    "Solid AI background with several matching skills."
+]
+
+LOW_TEMPLATES = [
+    "Partial alignment with the required skills.",
+    "Relevant background but fewer core matches than higher-ranked candidates.",
+    "Some relevant experience, although overall fit is weaker."
+]
 def explain_candidate(candidate, features, rank=None):
 
     profile = candidate.get("profile", {})
@@ -17,6 +34,24 @@ def explain_candidate(candidate, features, rank=None):
         "matched_skills",
         []
     )
+
+    if rank is None:
+        rank = 100
+
+    if rank <= 10:
+        intro = TOP_TEMPLATES[
+            hash(candidate["candidate_id"]) % len(TOP_TEMPLATES)
+        ]
+
+    elif rank <= 50:
+        intro = MID_TEMPLATES[
+            hash(candidate["candidate_id"]) % len(MID_TEMPLATES)
+        ]
+
+    else:
+        intro = LOW_TEMPLATES[
+            hash(candidate["candidate_id"]) % len(LOW_TEMPLATES)
+        ]
 
     response = signals.get(
         "recruiter_response_rate",
@@ -44,23 +79,8 @@ def explain_candidate(candidate, features, rank=None):
         f"{title} with {years:.1f} years of experience."
     )
 
-    if len(matched) >= 5:
+    reasons.append(intro)
 
-        reasons.append(
-            "Strong alignment with the core AI requirements."
-        )
-
-    elif len(matched) >= 3:
-
-        reasons.append(
-            "Good alignment with the job description."
-        )
-
-    else:
-
-        reasons.append(
-            "Partial alignment with the required AI skills."
-        )
 
     if matched:
 
@@ -73,13 +93,13 @@ def explain_candidate(candidate, features, rank=None):
     if response >= 0.80:
 
         reasons.append(
-            "Excellent recruiter engagement."
+            "Excellent recruiter response rate."
         )
 
     elif response >= 0.60:
 
         reasons.append(
-            "Good recruiter engagement."
+            "Strong recruiter engagement."
         )
 
     elif response >= 0.40:
@@ -88,10 +108,16 @@ def explain_candidate(candidate, features, rank=None):
             "Moderate recruiter engagement."
         )
 
+    else:
+
+        reasons.append(
+            "Lower recruiter engagement than higher-ranked candidates."
+        )
+
     if github >= 75:
 
         reasons.append(
-            "High recent GitHub activity."
+            "Strong recent GitHub activity."
         )
 
     if open_to_work:
@@ -103,21 +129,7 @@ def explain_candidate(candidate, features, rank=None):
     if notice is not None and notice >= 90:
 
         reasons.append(
-            f"Long notice period ({notice} days)."
+            f"Long notice period ({notice} days) may delay availability."
         )
-
-    if rank is not None and rank > 70:
-
-        if len(matched) < 3:
-
-            reasons.append(
-                "Matches only part of the required AI skill set."
-            )
-
-        elif response < 0.40:
-
-            reasons.append(
-                "Recruiter engagement is lower than higher-ranked candidates."
-            )
-
+    
     return " ".join(reasons)
