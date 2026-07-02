@@ -1,28 +1,19 @@
-def explain_candidate(candidate, features):
+def explain_candidate(candidate, features, rank=None):
 
-    reasons = []
-
-    profile = candidate.get(
-        "profile",
-        {}
-    )
-
-    signals = candidate.get(
-        "redrob_signals",
-        {}
-    )
+    profile = candidate.get("profile", {})
+    signals = candidate.get("redrob_signals", {})
 
     title = profile.get(
         "current_title",
-        "Candidate"
+        "AI Professional"
     )
 
-    yrs = profile.get(
+    years = profile.get(
         "years_of_experience",
         0
     )
 
-    skills = features.get(
+    matched = features.get(
         "matched_skills",
         []
     )
@@ -32,35 +23,101 @@ def explain_candidate(candidate, features):
         0
     )
 
-    reasons.append(
-        f"{title}"
+    notice = signals.get(
+        "notice_period_days",
+        None
     )
 
-    reasons.append(
-        f"{yrs} yrs"
+    github = signals.get(
+        "github_activity_score",
+        -1
     )
 
-    if skills:
+    open_to_work = signals.get(
+        "open_to_work_flag",
+        False
+    )
+
+    reasons = []
+
+    reasons.append(
+        f"{title} with {years:.1f} years of experience."
+    )
+
+    if len(matched) >= 5:
 
         reasons.append(
-            f"{len(skills)} AI skills"
+            "Strong alignment with the core AI requirements."
         )
 
+    elif len(matched) >= 3:
+
         reasons.append(
-            ", ".join(
-                skills[:3]
+            "Good alignment with the job description."
+        )
+
+    else:
+
+        reasons.append(
+            "Partial alignment with the required AI skills."
+        )
+
+    if matched:
+
+        reasons.append(
+            "Key skills: "
+            + ", ".join(matched[:3])
+            + "."
+        )
+
+    if response >= 0.80:
+
+        reasons.append(
+            "Excellent recruiter engagement."
+        )
+
+    elif response >= 0.60:
+
+        reasons.append(
+            "Good recruiter engagement."
+        )
+
+    elif response >= 0.40:
+
+        reasons.append(
+            "Moderate recruiter engagement."
+        )
+
+    if github >= 75:
+
+        reasons.append(
+            "High recent GitHub activity."
+        )
+
+    if open_to_work:
+
+        reasons.append(
+            "Currently open to work."
+        )
+
+    if notice is not None and notice >= 90:
+
+        reasons.append(
+            f"Long notice period ({notice} days)."
+        )
+
+    if rank is not None and rank > 70:
+
+        if len(matched) < 3:
+
+            reasons.append(
+                "Matches only part of the required AI skill set."
             )
-        )
 
-    reasons.append(
-        f"response rate {round(response, 2)}"
-    )
+        elif response < 0.40:
 
-    if signals.get(
-        "open_to_work_flag"
-    ):
-        reasons.append(
-            "open to work"
-        )
+            reasons.append(
+                "Recruiter engagement is lower than higher-ranked candidates."
+            )
 
-    return "; ".join(reasons)
+    return " ".join(reasons)

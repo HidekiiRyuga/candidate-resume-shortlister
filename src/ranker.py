@@ -1,6 +1,8 @@
 from src.feature_extractor import extract_candidate_features
 from src.ranking_config import WEIGHTS
-from src.semantic_match import semantic_score
+from src.semantic_match import semantic_scores_batch
+import heapq
+import time
 
 JOB_DESCRIPTION="""
 Senior AI Engineer
@@ -31,8 +33,7 @@ VECTOR={
     "elasticsearch"
 }
 
-
-def calculate_score(features,candidate):
+def calculate_score(features, candidate, semantic):
 
     score=0
 
@@ -52,11 +53,6 @@ def calculate_score(features,candidate):
         signal*=0.7
 
     score+=signal
-
-    semantic=semantic_score(
-        JOB_DESCRIPTION,
-        str(candidate)
-    )
 
     if matched>=4:
         semantic*=0.55
@@ -99,48 +95,114 @@ def calculate_score(features,candidate):
     if len(skills)==0:
         score-=12
 
-    score=max(0,min(score,100))
+    score -= features[
+    "consistency_penalty"
+]
+    score=max(score,0)
 
     return round(score,2)
 
 
+import time
+import heapq
+
 def rank_candidates(candidates):
 
-    ranked=[]
+    total_start = time.time()
+
+    # -------- Stage 1 : Fast ranking --------
+    t1 = time.time()
+
+    stage1 = []
 
     for candidate in candidates:
 
-        features=extract_candidate_features(
-            candidate
+        features = extract_candidate_features(candidate)
+
+        fast_score = (
+            (features["skill_score"] / 40) * WEIGHTS["skills"]
+            + (features["experience_score"] / 25) * WEIGHTS["experience"]
+            + (features["achievement_score"] / 10) * WEIGHTS["achievements"]
+            + (features["title_score"] / 15) * 10
+            + features["signal_score"]
+        )
+
+        stage1.append({
+            "candidate": candidate,
+            "features": features,
+            "fast_score": fast_score
+        })
+
+    print("Stage 1 time:", time.time() - t1)
+
+    # -------- Stage 1.5 : Top-K selection --------
+    t2 = time.time()
+
+    stage2 = heapq.nlargest(
+        1000,
+        stage1,
+        key=lambda x: x["fast_score"]
+    )
+
+    print("Top-K time:", time.time() - t2)
+
+    # -------- Stage 2 : Semantic reranking --------
+    t3 = time.time()
+
+    candidate_texts = [
+        str(row["candidate"])
+        for row in stage2
+    ]
+
+    semantic_scores = semantic_scores_batch(
+        JOB_DESCRIPTION,
+        candidate_texts
+    )
+
+    print("Semantic batch time:", time.time() - t3)
+
+    # -------- Final scoring --------
+    t4 = time.time()
+
+    ranked = []
+
+    for row, semantic in zip(stage2, semantic_scores):
+
+        score = calculate_score(
+            row["features"],
+            row["candidate"],
+            semantic
         )
 
         ranked.append({
-            "candidate":candidate,
-            "score":calculate_score(
-                features,
-                candidate
-            ),
-            "semantic_score":semantic_score(
-                JOB_DESCRIPTION,
-                str(candidate)
-            ),
-            "features":features
+            "candidate": row["candidate"],
+            "score": score,
+            "semantic_score": semantic,
+            "features": row["features"]
         })
 
     ranked.sort(
-        key=lambda x:(
+
+        key=lambda x: (
+
             x["score"],
-            len(
-                x["features"]["matched_skills"]
-            )
+
+            len(x["features"]["matched_skills"]),
+
+            x["semantic_score"],
+
+            x["candidate"]["candidate_id"]
+
         ),
+
         reverse=True
+
     )
 
-    for i,row in enumerate(
-        ranked,
-        1
-    ):
-        row["rank"]=i
+    for rank, row in enumerate(ranked, 1):
+        row["rank"] = rank
+
+    print("Final ranking time:", time.time() - t4)
+    print("TOTAL time:", time.time() - total_start)
 
     return ranked

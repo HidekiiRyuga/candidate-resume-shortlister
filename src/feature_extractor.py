@@ -2,7 +2,41 @@ import re
 from src.ranking_config import REQUIRED_SKILLS,PREFERRED_SKILLS,GOOD_TITLES,ACHIEVEMENT_WORDS
 
 def candidate_to_text(candidate):
-    return str(candidate).lower()
+
+    profile = candidate.get("profile", {})
+    history = candidate.get("career_history", [])
+    skills = candidate.get("skills", [])
+    education = candidate.get("education", [])
+
+    parts = [
+        profile.get("headline", ""),
+        profile.get("summary", ""),
+        profile.get("current_title", "")
+    ]
+
+    for skill in skills:
+        parts.append(
+            skill.get("name", "")
+        )
+
+    for job in history[:2]:
+        parts.append(
+            job.get("title", "")
+        )
+        parts.append(
+            job.get("description", "")
+        )
+
+    if education:
+        edu = education[0]
+        parts.append(
+            edu.get("degree", "")
+        )
+        parts.append(
+            edu.get("field_of_study", "")
+        )
+
+    return " ".join(parts).lower()
 
 def get_skill_score(text):
 
@@ -110,23 +144,13 @@ def get_experience_score(candidate):
 
 def get_title_score(text):
 
-    score=0
+    score = 0
 
-    titles=[
-        "ai engineer",
-        "ml engineer",
-        "machine learning",
-        "search",
-        "ranking",
-        "recommendation",
-        "relevance"
-    ]
+    for title in GOOD_TITLES:
+        if title.lower() in text:
+            score += 2
 
-    for t in titles:
-        if t in text:
-            score+=3
-
-    return min(score,15)
+    return min(score, 15)
 
 
 def get_achievement_score(text):
@@ -200,37 +224,71 @@ def get_signal_score(candidate):
         2
     )
 
+def consistency_penalty(candidate):
+
+    penalty = 0
+
+    profile = candidate.get("profile", {})
+
+    experience = profile.get(
+        "years_of_experience",
+        0
+    )
+
+    skills = candidate.get(
+        "skills",
+        []
+    )
+
+    for skill in skills:
+
+        duration = skill.get(
+            "duration_months",
+            0
+        )
+
+        proficiency = skill.get(
+            "proficiency",
+            ""
+        ).lower()
+
+        if (
+            proficiency == "expert"
+            and duration < 6
+        ):
+            penalty += 3
+
+        if duration > experience * 12 + 12:
+            penalty += 2
+
+    return penalty
 
 def extract_candidate_features(candidate):
 
-    text=candidate_to_text(
-        candidate
-    )
+    text = candidate_to_text(candidate)
 
-    skill,matched=(
-        get_skill_score(
-            text
-        )
-    )
+    skill, matched = get_skill_score(text)
 
-    return{
-        "skill_score":skill,
-        "experience_score":
-            get_experience_score(
-                candidate
-            ),
-        "title_score":
-            get_title_score(
-                text
-            ),
-        "achievement_score":
-            get_achievement_score(
-                text
-            ),
-        "signal_score":
-            get_signal_score(
-                candidate
-            ),
-        "matched_skills":
-            matched
+    profile = candidate.get("profile", {})
+
+    title_text = (
+        profile.get("current_title", "")
+        + " "
+        + profile.get("headline", "")
+    ).lower()
+
+    achievement_text = profile.get("summary", "")
+
+    for job in candidate.get("career_history", [])[:2]:
+        achievement_text += " "
+        achievement_text += job.get("description", "")
+
+    return {
+        "skill_score": skill,
+        "experience_score": get_experience_score(candidate),
+        "title_score": get_title_score(title_text),
+        "achievement_score": get_achievement_score(achievement_text),
+        "signal_score": get_signal_score(candidate),
+        "matched_skills": matched,
+        "consistency_penalty": consistency_penalty(candidate),
     }
